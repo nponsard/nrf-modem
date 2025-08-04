@@ -17,6 +17,7 @@ mod at_notifications;
 mod cancellation;
 mod dns;
 mod dtls_socket;
+pub mod embassy_net_modem;
 pub(crate) mod embedded_io_macros;
 mod error;
 pub mod ffi;
