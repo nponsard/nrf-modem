@@ -2,20 +2,16 @@
 // Licence: https://github.com/embassy-rs/embassy/blob/main/LICENSE-APACHE
 // Source file: https://github.com/embassy-rs/embassy/blob/a8cb8a7fe1f594b765dee4cfc6ff3065842c7c6e/embassy-net-nrf91/src/lib.rs
 
-pub mod context;
-
 use core::cell::RefCell;
-
 use core::mem::MaybeUninit;
 
-use crate::socket::Socket;
-
 use embassy_futures::select::{select, Either};
-
+use embassy_net_driver_channel as ch;
 use embassy_time::Timer;
 
-use embassy_net_driver_channel as ch;
+pub mod context;
 
+use crate::socket::Socket;
 const MTU: usize = 1500;
 
 /// Network driver.
@@ -23,14 +19,8 @@ const MTU: usize = 1500;
 /// This is the type you have to pass to `embassy-net` when creating the network stack.
 pub type NetDriver<'a> = ch::Device<'a, MTU>;
 
-/// Create a new nRF91 embassy-net driver.
+/// Create a new nrf-modem embassy-net driver.
 pub async fn new<'a>(state: &'a mut State) -> (NetDriver<'a>, Control<'a>, Runner<'a>) {
-    let (n, c, r) = new_internal(state).await;
-    (n, c, r)
-}
-
-/// Create a new nRF91 embassy-net driver.
-async fn new_internal<'a>(state: &'a mut State) -> (NetDriver<'a>, Control<'a>, Runner<'a>) {
     // ------ Driver initialization ------
 
     let state_inner = &*state
@@ -70,10 +60,6 @@ impl State {
 struct StateInner {
     net_socket: Option<Socket>,
 }
-
-// impl StateInner {
-//     fn poll(&mut self, ch: &mut ch::Runner<MTU>) {}
-// }
 
 /// Control handle for the driver.
 ///
